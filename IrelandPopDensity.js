@@ -1,12 +1,12 @@
-//Helpful Sources:
+//Sources:
 //http://d3-legend.susielu.com/#color-threshold
 //http://bl.ocks.org/aerrity/4338818
 //http://bl.ocks.org/shimizu/61e271a44f9fb832b272417c0bc853a5
 
 //Define Margin
-var margin = {left: 10, right: 10, top: 40, bottom: 0 }, 
+var margin = {left: 10, right: 10, top: 0, bottom: 0 }, 
     width = 620 - margin.left -margin.right,
-    height = 760 - margin.top - margin.bottom;
+    height = 720 - margin.top - margin.bottom;
 
 //Define main SVG
 var svg = d3.select("body")
@@ -21,7 +21,7 @@ var svgLegend = d3.select("body")
     .append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", 40 + margin.top + margin.bottom)
-    .attr("transform", "translate(" + (-width) + "," + (5 + margin.top - height) + ")");
+    .attr("transform", "translate(" + 0 + "," + (70-height) + ")");
 
 //Define map projection
 var projection = d3.geoMercator()
