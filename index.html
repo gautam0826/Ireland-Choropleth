@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html> 
+    
+  <head>
+    <!-- Meta Tag -->
+    <meta charset="utf-8">
+    <!-- CSS Stylesheet -->
+    <link rel="stylesheet" type="text/css" href="IrelandPopDensity.css">  
+    <!-- D3.js Source -->
+    <script type= "text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.25.6/d3-legend.js"></script>
+  </head>
+    
+  <body>
+    <h1 style = "text-align:center"><bold>Ireland Choropleth</bold></h1>
+    <form id="form">
+        <input type="radio" name="options" value="a">% Irish language speakers (2016)<br>
+        <input type="radio" name="options" value="b">Change in rural population (2011-2016)
+    </form>
+    <!-- D3.js code for making a Bar Graph -->
+    <script type="text/javascript" src="IrelandPopDensity.js"></script> 
+    <!-- Name -->
+    <h4 style = "text-align:left">Gautam Sarkar<br>CMPS 165 Spring 2018</h4>
+    <p>Data sources:<br><a href="http://www.cso.ie/px/pxeirestat/Statire/SelectVarVal/Define.asp?maintable=EA040&PLanguage=0">Irish language speakers</a><br><a href="http://www.cso.ie/px/pxeirestat/Statire/SelectVarVal/Define.asp?maintable=E2004&PLanguage=0">Rural population</a></p>
+  </body>
+</html>
