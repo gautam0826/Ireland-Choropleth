@@ -1,26 +1,27 @@
-//Sources:
+//Helpful Sources:
 //http://d3-legend.susielu.com/#color-threshold
 //http://bl.ocks.org/aerrity/4338818
 //http://bl.ocks.org/shimizu/61e271a44f9fb832b272417c0bc853a5
 
 //Define Margin
-var margin = {left: 10, right: 10, top: 0, bottom: 0 }, 
-    width = 800 - margin.left -margin.right,
-    height = 720 - margin.top - margin.bottom;
-
-//Define Legend above main SVG
-var svgLegend = d3.select("#area1")
-    .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", 40 + margin.top + margin.bottom);
+var margin = {left: 10, right: 10, top: 40, bottom: 0 }, 
+    width = 620 - margin.left -margin.right,
+    height = 760 - margin.top - margin.bottom;
 
 //Define SVG
-var svg = d3.select("#area2")
+var svg = d3.select("body")
     .append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+//Define Legend to the right of main SVG
+var svgLegend = d3.select("body")
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", 40 + margin.top + margin.bottom)
+    .attr("transform", "translate(" + (-width) + "," + (5 + margin.top - height) + ")");
 
 //Define map projection
 var projection = d3.geoMercator()
@@ -65,6 +66,7 @@ d3.selectAll(("input[name='options']")).on("change", function(){
                     d3.max(data, function(d) {return (d.a); })
                 ]);
 
+            //Create legend
             svgLegend.append("g")
                 .attr("class", "legendLinear");
 
@@ -79,6 +81,7 @@ d3.selectAll(("input[name='options']")).on("change", function(){
             svgLegend.select(".legendLinear")
                 .call(legendLinear);
             
+            //Change counties colors
             counties.selectAll("path")
                 .attr("fill", function(d) {
                     //console.log(d.properties.Name)
@@ -106,6 +109,7 @@ d3.selectAll(("input[name='options']")).on("change", function(){
                     -2000, 0, 7000
                 ]);
 
+            //Create legend
             svgLegend.append("g")
                 .attr("class", "legendLinear");
 
@@ -118,6 +122,7 @@ d3.selectAll(("input[name='options']")).on("change", function(){
             svgLegend.select(".legendLinear")
                 .call(legendLinear);
             
+            //Change counties colors
             counties.selectAll("path")
                 .attr("fill", function(d) {
                     //console.log(d.properties.Name)
