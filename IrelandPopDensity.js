@@ -20,8 +20,7 @@ var svg = d3.select("body")
 var svgLegend = d3.select("body")
     .append("svg")
     .attr("width", width + margin.left + margin.right)
-    .attr("height", 40 + margin.top + margin.bottom)
-    .attr("transform", "translate(" + 0 + "," + (70-height) + ")");
+    .attr("height", 40 + margin.top + margin.bottom);
 
 //Define map projection
 var projection = d3.geoMercator()
