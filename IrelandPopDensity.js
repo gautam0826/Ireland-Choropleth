@@ -8,7 +8,7 @@ var margin = {left: 10, right: 10, top: 40, bottom: 0 },
     width = 620 - margin.left -margin.right,
     height = 760 - margin.top - margin.bottom;
 
-//Define SVG
+//Define main SVG
 var svg = d3.select("body")
     .append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -16,7 +16,7 @@ var svg = d3.select("body")
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-//Define Legend to the right of main SVG
+//Define Legend SVG
 var svgLegend = d3.select("body")
     .append("svg")
     .attr("width", width + margin.left + margin.right)
