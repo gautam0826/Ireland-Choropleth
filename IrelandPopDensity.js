@@ -9,13 +9,13 @@ var margin = {left: 10, right: 10, top: 0, bottom: 0 },
     height = 720 - margin.top - margin.bottom;
 
 //Define Legend above main SVG
-var svgLegend = d3.select("body")
+var svgLegend = d3.select("#svg")
     .append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", 40 + margin.top + margin.bottom);
 
 //Define SVG
-var svg = d3.select("body")
+var svg = d3.select("#svgLegend")
     .append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
