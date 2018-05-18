@@ -49,9 +49,10 @@ d3.json("Ireland.json", function(error, geojson) {
 })
 
 //Get input from radio buttons
-d3.selectAll(("input[name='options']")).on("change", function(){
+d3.selectAll(("input[name='options']")).on("change", function() {
     //console.log(this.value)
     var optionA = (this.value == "a");
+    var optionB = (this.value == "b");
 
     //Load CSV data
     d3.csv("PopDensity.csv", function(error, data) {
@@ -101,7 +102,7 @@ d3.selectAll(("input[name='options']")).on("change", function(){
                     }
                 })
         }
-        else {
+        else if (optionB) {
             //Define color scale
             var colorScaleB = d3.scaleLinear()
                 .range(d3.schemeGreens[3])
@@ -135,6 +136,50 @@ d3.selectAll(("input[name='options']")).on("change", function(){
                             //console.log(value)
                             if (value) {
                                 return colorScaleB(value);
+                            } else {
+                                return "black";
+                            }
+                        }
+                    }
+                })
+        }
+        else {
+             //Define color scale
+            var colorScaleC = d3.scalePow()
+                .exponent(0.5)
+                .range(d3.schemeGreens[3])
+                .domain([
+                    20, 85, 1500
+                ]);
+
+            //Create legend
+            svgLegend.append("g")
+                .attr("class", "legendLinear");
+
+            var legendLinear = d3.legendColor()
+                .shapeWidth(100)
+                .cells([
+                    30, 50, 70, 150, 1500
+                ])
+                .orient('horizontal')
+                .scale(colorScaleC);
+
+            svgLegend.select(".legendLinear")
+                .call(legendLinear);
+
+            //Change counties colors
+            counties.selectAll("path")
+                .attr("fill", function(d) {
+                    //console.log(d.properties.Name)
+                    for (var i = 0; i < data.length; i++) {
+                        var countyData = data[i];
+                        //console.log(countyData.region)
+                        if (countyData.region == d.properties.Name) {
+                            //console.log(countyData)
+                            value = countyData.c;
+                            //console.log(value)
+                            if (value) {
+                                return colorScaleC(value);
                             } else {
                                 return "black";
                             }
