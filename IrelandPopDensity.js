@@ -55,24 +55,24 @@ d3.json("Ireland.json", function(error, geojson) {
         
         //Add data from CSV to matching JSON data
         for (var jsonIndex = 0; jsonIndex < geojson.features.length; jsonIndex++) {
-            var jsonProperties = geojson.features[jsonIndex].properties
+            var geojsonProperties = geojson.features[jsonIndex].properties
             for (var csvIndex = 0; csvIndex < data.length; csvIndex++) {
                 var countyData = data[csvIndex];
-                if (jsonProperties.Name == countyData.Name) {
+                if (geojsonProperties.Name == countyData.Name) {
                     //console.log(jsonProperties)
                     //console.log(countyData)
-                    jsonProperties["popDensity"] = countyData["Pop Density"];
-                    jsonProperties["ruralPopChange"] = countyData["Rural Pop Change"];
-                    jsonProperties["irishSpeak"] = countyData["Irish�Speaking%"];
+                    geojsonProperties["popDensity"] = countyData["Pop Density"];
+                    geojsonProperties["ruralPopChange"] = countyData["Rural Pop Change"];
+                    geojsonProperties["irishSpeak"] = countyData["Irish�Speaking%"];
                 }
             }
         }
         
         //Define color scales
         var colorScalePopDensity = d3.scaleLinear()
-            .range(d3.schemeGreens[3])
+            .range(d3.schemeGreens[5])
             .domain([
-                20, 85, 1500
+                20, 50, 75, 150, 1500
             ]);
         
         var colorScaleRuralPopChange = d3.scaleLinear()
@@ -93,7 +93,7 @@ d3.json("Ireland.json", function(error, geojson) {
         var legendPopDensity = d3.legendColor()
             .shapeWidth(100)
             .cells([
-                30, 50, 70, 150, 1500
+                20, 50, 75, 150, 1500
             ])
             .orient('horizontal')
             .scale(colorScalePopDensity);
