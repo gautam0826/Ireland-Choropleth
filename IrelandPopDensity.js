@@ -36,157 +36,134 @@ var path = d3.geoPath()
 var counties = svg.append("g")
     .attr("id", "ireland");
 
+//Define Tooltip
+var tooltip = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
+
+//Define dictionaries to hold color scales and legends
+var colorScaleDict = {};
+var legendDict = {};
+
 //Load GeoJSON data
 d3.json("Ireland.json", function(error, geojson) {
-  if (error) throw error;
-  counties.selectAll("path")
-    .data(geojson.features)
-    .enter().append("path")
-    .attr("class", "ireland")
-    .attr("fill", "rgb(49, 163, 84)")
-    .attr("d", path)
-    .attr("stroke", "#222");
-})
-
-//Get input from radio buttons
-d3.selectAll(("input[name='options']")).on("change", function() {
-    //console.log(this.value)
-    var optionA = (this.value == "a");
-    var optionB = (this.value == "b");
-
+    if (error) throw error;
+    
     //Load CSV data
     d3.csv("PopDensity.csv", function(error, data) {
         if (error) throw error;
-        if (optionA) {
-            //Define color scale
-            var colorScaleA = d3.scaleLinear()
-                .range(d3.schemeGreens[3])
-                .domain([
-                    d3.min(data, function(d) {return (d.a); }),
-                    d3.quantile(data, 0.5, function(d) {return (d.a); }),
-                    d3.max(data, function(d) {return (d.a); })
-                ]);
-
-            //Create legend
-            svgLegend.append("g")
-                .attr("class", "legendLinear");
-
-            var legendLinear = d3.legendColor()
-                .shapeWidth(100)
-                .cells([
-                    32, 35, 40, 45, 50
-                ])
-                .orient('horizontal')
-                .scale(colorScaleA);
-
-            svgLegend.select(".legendLinear")
-                .call(legendLinear);
-            
-            //Change counties colors
-            counties.selectAll("path")
-                .attr("fill", function(d) {
-                    //console.log(d.properties.Name)
-                    for (var i = 0; i < data.length; i++) {
-                        var countyData = data[i];
-                        //console.log(countyData.region)
-                        if (countyData.region == d.properties.Name) {
-                            //console.log(countyData)
-                            value = countyData.a;
-                            //console.log(value)
-                            if (value) {
-                                return colorScaleA(value);
-                            } else {
-                                return "black";
-                            }
-                        }
-                    }
-                })
+        
+        //Add data from CSV to matching JSON data
+        for (var jsonIndex = 0; jsonIndex < geojson.features.length; jsonIndex++) {
+            var jsonProperties = geojson.features[jsonIndex].properties
+            for (var csvIndex = 0; csvIndex < data.length; csvIndex++) {
+                var countyData = data[csvIndex];
+                if (jsonProperties.Name == countyData.Name) {
+                    //console.log(jsonProperties)
+                    //console.log(countyData)
+                    jsonProperties["popDensity"] = countyData["Pop Density"];
+                    jsonProperties["ruralPopChange"] = countyData["Rural Pop Change"];
+                    jsonProperties["irishSpeak"] = countyData["Irish�Speaking%"];
+                }
+            }
         }
-        else if (optionB) {
-            //Define color scale
-            var colorScaleB = d3.scaleLinear()
-                .range(d3.schemeGreens[3])
-                .domain([
-                    -2000, 0, 7000
-                ]);
+        
+        //Define color scales
+        var colorScalePopDensity = d3.scaleLinear()
+            .range(d3.schemeGreens[3])
+            .domain([
+                20, 85, 1500
+            ]);
+        
+        var colorScaleRuralPopChange = d3.scaleLinear()
+            .range(d3.schemeGreens[3])
+            .domain([
+                -2000, 0, 7000
+            ]);
+        
+        var colorScaleIrishSpeak = d3.scaleLinear()
+            .range(d3.schemeGreens[3])
+            .domain([
+                d3.min(data, function(d) {return (d["Irish�Speaking%"]); }),
+                d3.quantile(data, 0.5, function(d) {return (d["Irish�Speaking%"]); }),
+                d3.max(data, function(d) {return (d["Irish�Speaking%"]); })
+            ]);
+        
+        //Define legends
+        var legendPopDensity = d3.legendColor()
+            .shapeWidth(100)
+            .cells([
+                30, 50, 70, 150, 1500
+            ])
+            .orient('horizontal')
+            .scale(colorScalePopDensity);
+        
+        var legendRuralPopChange = d3.legendColor()
+            .shapeWidth(100)
+            .cells(5)
+            .orient('horizontal')
+            .scale(colorScaleRuralPopChange);
+        
+        var legendIrishSpeak = d3.legendColor()
+            .shapeWidth(100)
+            .cells([
+                32, 35, 40, 45, 50
+            ])
+            .orient('horizontal')
+            .scale(colorScaleIrishSpeak);
+        
+        //Add color scales to dictionary
+        colorScaleDict["popDensity"]= colorScalePopDensity;
+        colorScaleDict["ruralPopChange"] = colorScaleRuralPopChange;
+        colorScaleDict["irishSpeak"] = colorScaleIrishSpeak;
 
-            //Create legend
-            svgLegend.append("g")
-                .attr("class", "legendLinear");
-
-            var legendLinear = d3.legendColor()
-                .shapeWidth(100)
-                .cells(5)
-                .orient('horizontal')
-                .scale(colorScaleB);
-
-            svgLegend.select(".legendLinear")
-                .call(legendLinear);
-            
-            //Change counties colors
-            counties.selectAll("path")
-                .attr("fill", function(d) {
-                    //console.log(d.properties.Name)
-                    for (var i = 0; i < data.length; i++) {
-                        var countyData = data[i];
-                        //console.log(countyData.region)
-                        if (countyData.region == d.properties.Name) {
-                            //console.log(countyData)
-                            value = countyData.b;
-                            //console.log(value)
-                            if (value) {
-                                return colorScaleB(value);
-                            } else {
-                                return "black";
-                            }
-                        }
-                    }
-                })
-        }
-        else {
-             //Define color scale
-            var colorScaleC = d3.scalePow()
-                .exponent(0.5)
-                .range(d3.schemeGreens[3])
-                .domain([
-                    20, 85, 1500
-                ]);
-
-            //Create legend
-            svgLegend.append("g")
-                .attr("class", "legendLinear");
-
-            var legendLinear = d3.legendColor()
-                .shapeWidth(100)
-                .cells([
-                    30, 50, 70, 150, 1500
-                ])
-                .orient('horizontal')
-                .scale(colorScaleC);
-
-            svgLegend.select(".legendLinear")
-                .call(legendLinear);
-
-            //Change counties colors
-            counties.selectAll("path")
-                .attr("fill", function(d) {
-                    //console.log(d.properties.Name)
-                    for (var i = 0; i < data.length; i++) {
-                        var countyData = data[i];
-                        //console.log(countyData.region)
-                        if (countyData.region == d.properties.Name) {
-                            //console.log(countyData)
-                            value = countyData.c;
-                            //console.log(value)
-                            if (value) {
-                                return colorScaleC(value);
-                            } else {
-                                return "black";
-                            }
-                        }
-                    }
-                })
-        }
-        console.log(counties)
+        //Add legends to dictionary
+        legendDict["popDensity"] = legendPopDensity;
+        legendDict["ruralPopChange"] = legendRuralPopChange;
+        legendDict["irishSpeak"] = legendIrishSpeak;
     })
+    
+    //Initialize counties with green fill
+    counties.selectAll("path")
+        .data(geojson.features)
+        .enter().append("path")
+        .attr("class", "ireland")
+        .attr("fill", "rgb(49, 163, 84)")
+        .attr("d", path)
+        .attr("stroke", "#222")
+        .on("mouseout", function(d) {
+            tooltip.transition()
+                .duration(500) //ms
+                .style("opacity", 0);
+        });
+})
+
+//Change map based on radio buttons
+d3.selectAll(("input[name='options']")).on("change", function() {
+    //Get input from radio buttons and retrieve associated color scale and legend
+    choice = this.value;
+    var colorScale = colorScaleDict[choice];
+    var legend = legendDict[choice];
+    
+    //Add legend
+    svgLegend.append("g")
+        .attr("class", "legend");
+    svgLegend.select(".legend")
+        .call(legend);
+
+    //Update color scale and tooltip info
+    counties.selectAll("path")
+        .attr("fill", function(d) {
+            //console.log(d.properties)
+            return colorScale(d.properties[choice]);
+        })
+        .on("mouseover", function(d) {
+            tooltip.html("County: " + d.properties.Name + "<br>" + d.properties[choice])
+                .style("left", (d3.event.pageX) + "px")
+                .style("top", (d3.event.pageY - 15) + "px")
+                .style("background-color", "white")
+                .transition()
+                .duration(100) //ms
+                .style("opacity", 1)
+        });
 });
