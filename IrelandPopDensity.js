@@ -61,8 +61,16 @@ d3.json("Ireland.json", function(error, geojson) {
                 if (geojsonProperties.Name == countyData.Name) {
                     //console.log(jsonProperties)
                     //console.log(countyData)
+                    geojsonProperties["pop"] = countyData["2016 Pop"];
+                    geojsonProperties["popChange"] = countyData["Pop Change"];
+                    geojsonProperties["popChangePer"] = countyData["Pop % Change"]
                     geojsonProperties["popDensity"] = countyData["Pop Density"];
+                    geojsonProperties["ruralPop"] = countyData["2016 Rural Pop"];
                     geojsonProperties["ruralPopChange"] = countyData["Rural Pop Change"];
+                    geojsonProperties["ruralPopChangePer"] = countyData["Rural Pop % Change"]
+                    geojsonProperties["urbanPop"] = countyData["2016 Urban Pop"];
+                    geojsonProperties["urbanPopChange"] = countyData["Urban Pop Change"];
+                    geojsonProperties["urbanPopChangePer"] = countyData["Urban Pop % Change"]
                     geojsonProperties["irishSpeak"] = countyData["Irish�Speaking%"];
                 }
             }
@@ -74,11 +82,20 @@ d3.json("Ireland.json", function(error, geojson) {
             .domain([
                 20, 50, 75, 150, 1500
             ]);
-        
-        var colorScaleRuralPopChange = d3.scaleLinear()
+
+        var colorScaleUrbanPopChangePer = d3.scaleLinear()
             .range(d3.schemeGreens[3])
             .domain([
-                -2000, 0, 7000
+                d3.min(data, function(d) {return (d["Urban Pop % Change"]); }),
+                d3.quantile(data, 0.5, function(d) {return (d["Urban Pop % Change"]); }),
+                d3.max(data, function(d) {return (d["Urban Pop % Change"]); })
+            ]);
+        var colorScaleRuralPopChangePer = d3.scaleLinear()
+            .range(d3.schemeGreens[3])
+            .domain([
+                d3.min(data, function(d) {return (d["Rural Pop % Change"]); }),
+                d3.quantile(data, 0.5, function(d) {return (d["Rural Pop % Change"]); }),
+                d3.max(data, function(d) {return (d["Rural Pop % Change"]); })
             ]);
         
         var colorScaleIrishSpeak = d3.scaleLinear()
@@ -98,11 +115,17 @@ d3.json("Ireland.json", function(error, geojson) {
             .orient('horizontal')
             .scale(colorScalePopDensity);
         
-        var legendRuralPopChange = d3.legendColor()
+        var legendUrbanPopChangePer = d3.legendColor()
             .shapeWidth(100)
             .cells(5)
             .orient('horizontal')
-            .scale(colorScaleRuralPopChange);
+            .scale(colorScaleUrbanPopChangePer);
+        
+        var legendRuralPopChangePer = d3.legendColor()
+            .shapeWidth(100)
+            .cells(5)
+            .orient('horizontal')
+            .scale(colorScaleRuralPopChangePer);
         
         var legendIrishSpeak = d3.legendColor()
             .shapeWidth(100)
@@ -114,12 +137,14 @@ d3.json("Ireland.json", function(error, geojson) {
         
         //Add color scales to dictionary
         colorScaleDict["popDensity"]= colorScalePopDensity;
-        colorScaleDict["ruralPopChange"] = colorScaleRuralPopChange;
+        colorScaleDict["urbanPopChangePer"] = colorScaleUrbanPopChangePer;
+        colorScaleDict["ruralPopChangePer"] = colorScaleRuralPopChangePer;
         colorScaleDict["irishSpeak"] = colorScaleIrishSpeak;
 
         //Add legends to dictionary
         legendDict["popDensity"] = legendPopDensity;
-        legendDict["ruralPopChange"] = legendRuralPopChange;
+        legendDict["urbanPopChangePer"] = legendUrbanPopChangePer;
+        legendDict["ruralPopChangePer"] = legendRuralPopChangePer;
         legendDict["irishSpeak"] = legendIrishSpeak;
     })
     
@@ -138,14 +163,14 @@ d3.json("Ireland.json", function(error, geojson) {
         });
 })
 
-//Change map based on radio buttons
-d3.selectAll(("input[name='options']")).on("change", function() {
-    //Get input from radio buttons and retrieve associated color scale and legend
+//Change map based on dropdown menu
+d3.selectAll("select[name=dropdown]").on("change", function() {
+    //Get input from dropdown and retrieve associated color scale and legend
     choice = this.value;
     var colorScale = colorScaleDict[choice];
     var legend = legendDict[choice];
     
-    //Add legend
+    //Update legend
     svgLegend.append("g")
         .attr("class", "legend");
     svgLegend.select(".legend")
@@ -166,4 +191,4 @@ d3.selectAll(("input[name='options']")).on("change", function() {
                 .duration(100) //ms
                 .style("opacity", 1)
         });
-});
+})
